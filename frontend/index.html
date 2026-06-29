@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Motor de Reglas Inmobiliario</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <h2>Registrar Cliente</h2>
+
+    <input id="nombres" placeholder="Nombres">
+
+    <input id="apellidos" placeholder="Apellidos">
+
+    <input id="documento" placeholder="Documento">
+
+    <input id="telefono" placeholder="Teléfono">
+
+    <input id="correo" placeholder="Correo">
+
+    <input id="ingresos" type="number" placeholder="Ingresos mensuales">
+
+    <button onclick="crearCliente()">
+        Crear Cliente
+    </button>
+
+    <div class="container">
+
+        <h1>Motor de Reglas Inmobiliario</h1>
+
+        <input id="proceso_id" placeholder="ID Proceso">
+
+        <select id="tipo_operacion">
+            <option value="ARRIENDO">Arriendo</option>
+            <option value="VENTA">Venta</option>
+        </select>
+
+        <input id="ingresos_cliente" type="number" placeholder="Ingresos del cliente">
+
+        <input id="valor_canon" type="number" placeholder="Valor del canon">
+
+        <label>
+            <input type="checkbox" id="documentos_completos">
+            Documentos completos
+        </label>
+
+        <label>
+            <input type="checkbox" id="observaciones_contrato">
+            Observaciones contractuales
+        </label>
+
+        <label>
+            <input type="checkbox" id="firma_completada">
+            Firma completada
+        </label>
+
+        <label>
+            <input type="checkbox" id="acta_entrega">
+            Acta de entrega
+        </label>
+
+        <button onclick="evaluar()">
+            Evaluar Solicitud
+        </button>
+
+        <div id="resultado"></div>
+
+    </div>
+
+    <script src="app.js"></script>
+
+</body>
+
+</html>
