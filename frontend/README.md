@@ -17,8 +17,7 @@ Cada vez que cambias de sección en el sidebar, aparece un overlay modal
 ("Autenticando usuario") durante 3 segundos antes de mostrar la nueva
 pantalla. Es puramente decorativo/simulado (no llama a ningún endpoint
 de auth real); vive en `src/components/AuthOverlay.jsx` y se dispara
-desde `App.jsx`. Si más adelante el backend agrega autenticación real,
-este es el lugar natural para conectarla.
+desde `App.jsx`. 
 
 ## Estructura
 
