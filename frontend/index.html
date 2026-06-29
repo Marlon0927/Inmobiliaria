@@ -2,77 +2,1329 @@
 <html lang="es">
 
 <head>
-    <meta charset="UTF-8">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Motor de Reglas Inmobiliario</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap');
 
-    <link rel="stylesheet" href="style.css">
+        :root {
+            --bg: #0f1117;
+            --surface: #181c27;
+            --card: #1e2333;
+            --border: #2a3046;
+            --accent: #4f7cff;
+            --accent-lo: #4f7cff18;
+            --success: #22c55e;
+            --danger: #ef4444;
+            --warn: #f59e0b;
+            --text: #e8eaf0;
+            --muted: #7a839a;
+            --label: #a0aac0;
+            --mono: 'DM Mono', monospace;
+            --sans: 'Inter', sans-serif;
+            --radius: 10px;
+            --radius-sm: 6px;
+        }
+
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: var(--sans);
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* ── TOPBAR ── */
+        header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 0 32px;
+            height: 60px;
+            background: var(--surface);
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo-mark {
+            width: 32px;
+            height: 32px;
+            background: var(--accent);
+            border-radius: 8px;
+            display: grid;
+            place-items: center;
+            font-size: 16px;
+            font-weight: 700;
+            color: #fff;
+            flex-shrink: 0;
+        }
+
+        header h1 {
+            font-size: 15px;
+            font-weight: 600;
+            letter-spacing: .01em;
+        }
+
+        header span {
+            font-size: 13px;
+            color: var(--muted);
+            margin-left: 4px;
+        }
+
+        .header-api {
+            margin-left: auto;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12px;
+            color: var(--muted);
+            font-family: var(--mono);
+        }
+
+        .dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: var(--success);
+            flex-shrink: 0;
+        }
+
+        /* ── LAYOUT ── */
+        .shell {
+            display: flex;
+            flex: 1;
+        }
+
+        /* ── SIDEBAR ── */
+        nav {
+            width: 220px;
+            flex-shrink: 0;
+            background: var(--surface);
+            border-right: 1px solid var(--border);
+            padding: 24px 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .nav-label {
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: .12em;
+            color: var(--muted);
+            text-transform: uppercase;
+            padding: 0 10px 8px;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 9px 10px;
+            border-radius: var(--radius-sm);
+            font-size: 13.5px;
+            font-weight: 500;
+            color: var(--label);
+            cursor: pointer;
+            border: none;
+            background: none;
+            width: 100%;
+            text-align: left;
+            transition: background .15s, color .15s;
+        }
+
+        .nav-item:hover {
+            background: var(--border);
+            color: var(--text);
+        }
+
+        .nav-item.active {
+            background: var(--accent-lo);
+            color: var(--accent);
+        }
+
+        .nav-step {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: var(--border);
+            display: grid;
+            place-items: center;
+            font-size: 10px;
+            font-weight: 700;
+            color: var(--muted);
+            flex-shrink: 0;
+            transition: background .15s, color .15s;
+        }
+
+        .nav-item.active .nav-step {
+            background: var(--accent);
+            color: #fff;
+        }
+
+        .nav-item.done .nav-step {
+            background: var(--success);
+            color: #fff;
+        }
+
+        .nav-item.done {
+            color: var(--text);
+        }
+
+        .nav-sep {
+            height: 1px;
+            background: var(--border);
+            margin: 10px 4px;
+        }
+
+        /* ── MAIN ── */
+        main {
+            flex: 1;
+            padding: 36px 40px;
+            overflow-y: auto;
+        }
+
+        /* ── SECTION ── */
+        .section {
+            display: none;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        .section-head {
+            margin-bottom: 28px;
+        }
+
+        .section-head h2 {
+            font-size: 22px;
+            font-weight: 700;
+            letter-spacing: -.01em;
+            margin-bottom: 4px;
+        }
+
+        .section-head p {
+            font-size: 14px;
+            color: var(--muted);
+        }
+
+        /* ── CARD ── */
+        .card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 28px;
+            margin-bottom: 20px;
+        }
+
+        .card-title {
+            font-size: 12px;
+            font-weight: 600;
+            letter-spacing: .1em;
+            text-transform: uppercase;
+            color: var(--muted);
+            margin-bottom: 20px;
+        }
+
+        /* ── GRID ── */
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .grid-3 {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 16px;
+        }
+
+        .col-span-2 {
+            grid-column: span 2;
+        }
+
+        .col-span-3 {
+            grid-column: span 3;
+        }
+
+        /* ── FORM ELEMENTS ── */
+        .field {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        label {
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--label);
+            letter-spacing: .02em;
+        }
+
+        input[type=text],
+        input[type=email],
+        input[type=tel],
+        input[type=number],
+        select,
+        textarea {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            color: var(--text);
+            font-family: var(--sans);
+            font-size: 14px;
+            padding: 9px 12px;
+            outline: none;
+            transition: border-color .15s;
+            width: 100%;
+        }
+
+        input:focus,
+        select:focus,
+        textarea:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px var(--accent-lo);
+        }
+
+        input::placeholder,
+        textarea::placeholder {
+            color: var(--muted);
+        }
+
+        select option {
+            background: var(--card);
+        }
+
+        /* ── TOGGLE ── */
+        .toggle-group {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .toggle-btn {
+            padding: 7px 14px;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border);
+            background: var(--bg);
+            color: var(--muted);
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all .15s;
+            font-family: var(--sans);
+        }
+
+        .toggle-btn:hover {
+            border-color: var(--accent);
+            color: var(--text);
+        }
+
+        .toggle-btn.on {
+            background: var(--accent-lo);
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        .toggle-btn.off {
+            background: #ef444415;
+            border-color: var(--danger);
+            color: var(--danger);
+        }
+
+        /* ── BUTTON ── */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            border-radius: var(--radius-sm);
+            border: none;
+            cursor: pointer;
+            font-family: var(--sans);
+            font-size: 14px;
+            font-weight: 600;
+            transition: opacity .15s, transform .1s;
+        }
+
+        .btn:active {
+            transform: scale(.97);
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            color: #fff;
+        }
+
+        .btn-primary:hover {
+            opacity: .88;
+        }
+
+        .btn-ghost {
+            background: transparent;
+            color: var(--muted);
+            border: 1px solid var(--border);
+        }
+
+        .btn-ghost:hover {
+            color: var(--text);
+            border-color: #4a5270;
+        }
+
+        .btn-success {
+            background: var(--success);
+            color: #fff;
+        }
+
+        .btn-danger-outline {
+            background: transparent;
+            border: 1px solid var(--danger);
+            color: var(--danger);
+        }
+
+        .actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-top: 24px;
+        }
+
+        /* ── BADGE ── */
+        .badge {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 99px;
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: .04em;
+            text-transform: uppercase;
+        }
+
+        .badge-blue {
+            background: var(--accent-lo);
+            color: var(--accent);
+        }
+
+        .badge-green {
+            background: #22c55e18;
+            color: var(--success);
+        }
+
+        .badge-red {
+            background: #ef444418;
+            color: var(--danger);
+        }
+
+        .badge-yellow {
+            background: #f59e0b18;
+            color: var(--warn);
+        }
+
+        /* ── ID PILL ── */
+        .id-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: var(--border);
+            border-radius: 99px;
+            padding: 4px 12px;
+            font-family: var(--mono);
+            font-size: 12px;
+            color: var(--muted);
+        }
+
+        .id-pill b {
+            color: var(--accent);
+        }
+
+        /* ── CONTEXT BAR ── */
+        .ctx-bar {
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 14px 20px;
+            margin-bottom: 24px;
+            font-size: 13px;
+        }
+
+        .ctx-item {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .ctx-key {
+            font-size: 10px;
+            font-weight: 600;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: .08em;
+        }
+
+        .ctx-val {
+            font-family: var(--mono);
+            color: var(--text);
+            font-size: 13px;
+        }
+
+        .ctx-empty {
+            color: var(--muted);
+            font-style: italic;
+            font-family: var(--sans);
+        }
+
+        /* ── RESULT CARD ── */
+        .result-card {
+            border-radius: var(--radius);
+            padding: 28px;
+            margin-top: 20px;
+        }
+
+        .result-card.aprobado {
+            background: #22c55e0d;
+            border: 1px solid #22c55e30;
+        }
+
+        .result-card.rechazado {
+            background: #ef44440d;
+            border: 1px solid #ef444430;
+        }
+
+        .result-verdict {
+            font-size: 28px;
+            font-weight: 800;
+            letter-spacing: -.02em;
+            margin-bottom: 8px;
+        }
+
+        .result-card.aprobado .result-verdict {
+            color: var(--success);
+        }
+
+        .result-card.rechazado .result-verdict {
+            color: var(--danger);
+        }
+
+        .result-motivos {
+            margin-top: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .motivo-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            background: #ef444410;
+            border-left: 3px solid var(--danger);
+            border-radius: 0 6px 6px 0;
+            padding: 10px 14px;
+            font-size: 13.5px;
+            color: var(--text);
+        }
+
+        .motivo-icon {
+            color: var(--danger);
+            flex-shrink: 0;
+            margin-top: 1px;
+        }
+
+        /* ── RULES PANEL ── */
+        .rules-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-top: 16px;
+        }
+
+        .rule-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 12px 14px;
+        }
+
+        .rule-code {
+            font-family: var(--mono);
+            font-size: 10px;
+            color: var(--accent);
+            background: var(--accent-lo);
+            border-radius: 4px;
+            padding: 2px 6px;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .rule-desc {
+            font-size: 12.5px;
+            color: var(--label);
+            line-height: 1.5;
+        }
+
+        /* ── ALERT ── */
+        .alert {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            padding: 12px 14px;
+            border-radius: var(--radius-sm);
+            font-size: 13px;
+            margin-bottom: 16px;
+        }
+
+        .alert-warn {
+            background: #f59e0b12;
+            border: 1px solid #f59e0b30;
+            color: var(--warn);
+        }
+
+        .alert-success {
+            background: #22c55e12;
+            border: 1px solid #22c55e30;
+            color: var(--success);
+        }
+
+        .alert-error {
+            background: #ef444412;
+            border: 1px solid #ef444430;
+            color: var(--danger);
+        }
+
+        .alert-info {
+            background: var(--accent-lo);
+            border: 1px solid #4f7cff30;
+            color: var(--accent);
+        }
+
+        /* ── SPINNER ── */
+        .spinner {
+            width: 18px;
+            height: 18px;
+            border: 2px solid #ffffff40;
+            border-top-color: #fff;
+            border-radius: 50%;
+            animation: spin .6s linear infinite;
+            flex-shrink: 0;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* ── EVAL FIELDS ── */
+        .eval-bool-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .eval-bool-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 12px 14px;
+        }
+
+        .eval-bool-item .field-name {
+            font-size: 13px;
+            color: var(--label);
+        }
+
+        .eval-bool-item .rule-hint {
+            font-size: 11px;
+            color: var(--muted);
+            margin-top: 2px;
+        }
+
+        /* ── RESPONSIVE ── */
+        @media (max-width: 768px) {
+            nav {
+                display: none;
+            }
+
+            main {
+                padding: 20px;
+            }
+
+            .grid-2,
+            .grid-3,
+            .rules-grid,
+            .eval-bool-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .col-span-2,
+            .col-span-3 {
+                grid-column: span 1;
+            }
+        }
+    </style>
 </head>
 
 <body>
 
-    <h2>Registrar Cliente</h2>
+    <header>
+        <div class="logo-mark">SII</div>
+        <h1>Sistema Integral Inmobiliario</h1>
+        <span>v1.0</span>
+        <div class="header-api">
+            <div class="dot"></div>
+        </div>
+    </header>
 
-    <input id="nombres" placeholder="Nombres">
+    <div class="shell">
 
-    <input id="apellidos" placeholder="Apellidos">
+        <!-- SIDEBAR -->
+        <nav>
+            <div class="nav-label">Flujo de trabajo</div>
+            <button class="nav-item active" data-step="1" onclick="goTo(1)">
+                <span class="nav-step">1</span> Cliente
+            </button>
+            <button class="nav-item" data-step="2" onclick="goTo(2)">
+                <span class="nav-step">2</span> Solicitud
+            </button>
+            <button class="nav-item" data-step="3" onclick="goTo(3)">
+                <span class="nav-step">3</span> Proceso
+            </button>
+            <button class="nav-item" data-step="4" onclick="goTo(4)">
+                <span class="nav-step">4</span> Evaluación
+            </button>
+            <div class="nav-sep"></div>
+            <div class="nav-label">Sistema</div>
+            <button class="nav-item" onclick="resetAll()">
+                <span class="nav-step">↺</span> Reiniciar
+            </button>
+        </nav>
 
-    <input id="documento" placeholder="Documento">
+        <main>
 
-    <input id="telefono" placeholder="Teléfono">
+            <!-- ══════════ STEP 1: CLIENTE ══════════ -->
+            <div class="section active" id="sec-1">
+                <div class="section-head">
+                    <h2>Crear cliente</h2>
+                    <p>Registra los datos personales y financieros del nuevo cliente.</p>
+                </div>
 
-    <input id="correo" placeholder="Correo">
+                <div id="alert-1"></div>
 
-    <input id="ingresos" type="number" placeholder="Ingresos mensuales">
+                <div class="card">
+                    <div class="card-title">Datos personales</div>
+                    <div class="grid-2">
+                        <div class="field">
+                            <label>Nombres *</label>
+                            <input type="text" id="c-nombres" placeholder="Juan Carlos" />
+                        </div>
+                        <div class="field">
+                            <label>Apellidos *</label>
+                            <input type="text" id="c-apellidos" placeholder="García López" />
+                        </div>
+                        <div class="field">
+                            <label>Documento de identidad *</label>
+                            <input type="text" id="c-doc" placeholder="1234567890" />
+                        </div>
+                        <div class="field">
+                            <label>Teléfono *</label>
+                            <input type="tel" id="c-tel" placeholder="+57 300 000 0000" />
+                        </div>
+                        <div class="field col-span-2">
+                            <label>Correo electrónico *</label>
+                            <input type="email" id="c-correo" placeholder="cliente@ejemplo.com" />
+                        </div>
+                    </div>
+                </div>
 
-    <button onclick="crearCliente()">
-        Crear Cliente
-    </button>
+                <div class="card">
+                    <div class="card-title">Perfil financiero</div>
+                    <div class="grid-2">
+                        <div class="field">
+                            <label>Ingresos mensuales (COP) *</label>
+                            <input type="number" id="c-ingresos" placeholder="3000000" min="0" step="100000" />
+                        </div>
+                        <div style="display:flex; align-items:flex-end; padding-bottom:2px;">
+                            <div class="alert alert-info" style="margin:0; font-size:12px;">
+                                💡 El cliente debe tener ingresos ≥ 2× el valor del canon (RF-12/13)
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
-    <div class="container">
+                <div class="actions">
+                    <button class="btn btn-primary" onclick="crearCliente()">
+                        <span id="btn1-icon">→</span> Crear cliente
+                    </button>
+                </div>
+            </div>
 
-        <h1>Motor de Reglas Inmobiliario</h1>
+            <!-- ══════════ STEP 2: SOLICITUD ══════════ -->
+            <div class="section" id="sec-2">
+                <div class="section-head">
+                    <h2>Crear solicitud</h2>
+                    <p>Vincula la solicitud inmobiliaria al cliente recién registrado.</p>
+                </div>
 
-        <input id="proceso_id" placeholder="ID Proceso">
+                <div id="alert-2"></div>
 
-        <select id="tipo_operacion">
-            <option value="ARRIENDO">Arriendo</option>
-            <option value="VENTA">Venta</option>
-        </select>
+                <div class="ctx-bar">
+                    <div class="ctx-item">
+                        <span class="ctx-key">Cliente</span>
+                        <span class="ctx-val" id="ctx-cliente">—</span>
+                    </div>
+                    <div class="ctx-item">
+                        <span class="ctx-key">ID Cliente</span>
+                        <span class="ctx-val" id="ctx-id-cliente">—</span>
+                    </div>
+                </div>
 
-        <input id="ingresos_cliente" type="number" placeholder="Ingresos del cliente">
+                <div class="card">
+                    <div class="card-title">Datos de la solicitud</div>
+                    <div class="grid-2">
+                        <div class="field">
+                            <label>Número de radicado *</label>
+                            <input type="text" id="s-radicado" placeholder="RAD-2025-001" />
+                        </div>
+                        <div class="field">
+                            <label>ID Asesor *</label>
+                            <input type="number" id="s-asesor" placeholder="1" min="1" />
+                        </div>
+                        <div class="field">
+                            <label>Tipo de operación *</label>
+                            <select id="s-tipo">
+                                <option value="">— Selecciona —</option>
+                                <option value="1">1 — Arriendo</option>
+                                <option value="2">2 — Venta</option>
+                            </select>
+                        </div>
+                        <div class="field">
+                            <label>ID Cliente</label>
+                            <input type="number" id="s-id-cliente" placeholder="Auto-completado" readonly
+                                style="opacity:.6;" />
+                        </div>
+                    </div>
+                </div>
 
-        <input id="valor_canon" type="number" placeholder="Valor del canon">
+                <div class="actions">
+                    <button class="btn btn-ghost" onclick="goTo(1)">← Volver</button>
+                    <button class="btn btn-primary" onclick="crearSolicitud()">→ Crear solicitud</button>
+                </div>
+            </div>
 
-        <label>
-            <input type="checkbox" id="documentos_completos">
-            Documentos completos
-        </label>
+            <!-- ══════════ STEP 3: PROCESO ══════════ -->
+            <div class="section" id="sec-3">
+                <div class="section-head">
+                    <h2>Crear proceso</h2>
+                    <p>Registra el estado documental y contractual del proceso inmobiliario.</p>
+                </div>
 
-        <label>
-            <input type="checkbox" id="observaciones_contrato">
-            Observaciones contractuales
-        </label>
+                <div id="alert-3"></div>
 
-        <label>
-            <input type="checkbox" id="firma_completada">
-            Firma completada
-        </label>
+                <div class="ctx-bar">
+                    <div class="ctx-item">
+                        <span class="ctx-key">Cliente</span>
+                        <span class="ctx-val" id="ctx-cliente-3">—</span>
+                    </div>
+                    <div class="ctx-item">
+                        <span class="ctx-key">Solicitud #</span>
+                        <span class="ctx-val" id="ctx-solicitud-3">—</span>
+                    </div>
+                    <div class="ctx-item">
+                        <span class="ctx-key">Radicado</span>
+                        <span class="ctx-val" id="ctx-radicado-3">—</span>
+                    </div>
+                </div>
 
-        <label>
-            <input type="checkbox" id="acta_entrega">
-            Acta de entrega
-        </label>
+                <div class="card">
+                    <div class="card-title">Valor del proceso</div>
+                    <div class="grid-2">
+                        <div class="field">
+                            <label>Valor del canon (COP) *</label>
+                            <input type="number" id="p-canon" placeholder="1500000" min="0" step="50000" />
+                        </div>
+                        <div class="field">
+                            <label>ID Solicitud</label>
+                            <input type="number" id="p-id-solicitud" placeholder="Auto-completado" readonly
+                                style="opacity:.6;" />
+                        </div>
+                    </div>
+                </div>
 
-        <button onclick="evaluar()">
-            Evaluar Solicitud
-        </button>
+                <div class="card">
+                    <div class="card-title">Estado documental y contractual</div>
+                    <div class="eval-bool-grid">
+                        <div class="eval-bool-item">
+                            <div>
+                                <div class="field-name">Documentos completos</div>
+                                <div class="rule-hint">RF-8: expediente documental</div>
+                            </div>
+                            <div class="toggle-group" style="gap:6px;">
+                                <button class="toggle-btn on" onclick="setBool('p-docs', true,  this)">Sí</button>
+                                <button class="toggle-btn" onclick="setBool('p-docs', false, this)">No</button>
+                            </div>
+                        </div>
+                        <div class="eval-bool-item">
+                            <div>
+                                <div class="field-name">Observaciones de contrato</div>
+                                <div class="rule-hint">RF-21: sin pendientes</div>
+                            </div>
+                            <div class="toggle-group" style="gap:6px;">
+                                <button class="toggle-btn" onclick="setBool('p-obs', true,  this)">Sí</button>
+                                <button class="toggle-btn on" onclick="setBool('p-obs', false, this)">No</button>
+                            </div>
+                        </div>
+                        <div class="eval-bool-item">
+                            <div>
+                                <div class="field-name">Firma completada</div>
+                                <div class="rule-hint">RF-23: contrato firmado</div>
+                            </div>
+                            <div class="toggle-group" style="gap:6px;">
+                                <button class="toggle-btn on" onclick="setBool('p-firma', true,  this)">Sí</button>
+                                <button class="toggle-btn" onclick="setBool('p-firma', false, this)">No</button>
+                            </div>
+                        </div>
+                        <div class="eval-bool-item">
+                            <div>
+                                <div class="field-name">Acta de entrega</div>
+                                <div class="rule-hint">RF-29: acta registrada</div>
+                            </div>
+                            <div class="toggle-group" style="gap:6px;">
+                                <button class="toggle-btn on" onclick="setBool('p-acta', true,  this)">Sí</button>
+                                <button class="toggle-btn" onclick="setBool('p-acta', false, this)">No</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
-        <div id="resultado"></div>
+                <div class="actions">
+                    <button class="btn btn-ghost" onclick="goTo(2)">← Volver</button>
+                    <button class="btn btn-primary" onclick="crearProceso()">→ Crear proceso</button>
+                </div>
+            </div>
 
+            <!-- ══════════ STEP 4: EVALUACIÓN ══════════ -->
+            <div class="section" id="sec-4">
+                <div class="section-head">
+                    <h2>Evaluación del motor de reglas</h2>
+                    <p>Ejecuta el análisis automático sobre el proceso inmobiliario.</p>
+                </div>
+
+                <div id="alert-4"></div>
+
+                <div class="ctx-bar">
+                    <div class="ctx-item">
+                        <span class="ctx-key">Cliente</span>
+                        <span class="ctx-val" id="ctx-cliente-4">—</span>
+                    </div>
+                    <div class="ctx-item">
+                        <span class="ctx-key">Ingresos</span>
+                        <span class="ctx-val" id="ctx-ingresos-4">—</span>
+                    </div>
+                    <div class="ctx-item">
+                        <span class="ctx-key">Canon</span>
+                        <span class="ctx-val" id="ctx-canon-4">—</span>
+                    </div>
+                    <div class="ctx-item">
+                        <span class="ctx-key">Proceso #</span>
+                        <span class="ctx-val" id="ctx-proceso-4">—</span>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">Reglas que se van a aplicar</div>
+                    <div class="rules-grid">
+                        <div class="rule-item">
+                            <span class="rule-code">RF-8</span>
+                            <div class="rule-desc">Expediente documental completo requerido.</div>
+                        </div>
+                        <div class="rule-item">
+                            <span class="rule-code">RF-12/13</span>
+                            <div class="rule-desc">Ingresos del cliente ≥ 2× el valor del canon.</div>
+                        </div>
+                        <div class="rule-item">
+                            <span class="rule-code">RF-21</span>
+                            <div class="rule-desc">Sin observaciones contractuales pendientes.</div>
+                        </div>
+                        <div class="rule-item">
+                            <span class="rule-code">RF-23</span>
+                            <div class="rule-desc">Firma del contrato completada.</div>
+                        </div>
+                        <div class="rule-item" style="grid-column:span 2;">
+                            <span class="rule-code">RF-29</span>
+                            <div class="rule-desc">Acta de entrega registrada en el sistema.</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">Tipo de operación para la evaluación</div>
+                    <div class="field" style="max-width:300px;">
+                        <label>Tipo de operación *</label>
+                        <select id="e-tipo">
+                            <option value="ARRIENDO">Arriendo</option>
+                            <option value="VENTA">Venta</option>
+                            <option value="ADMINISTRACION">Administración</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="actions">
+                    <button class="btn btn-ghost" onclick="goTo(3)">← Volver</button>
+                    <button class="btn btn-primary" id="btn-eval" onclick="ejecutarEvaluacion()">
+                        ⚡ Ejecutar evaluación
+                    </button>
+                </div>
+
+                <div id="result-container"></div>
+            </div>
+
+        </main>
     </div>
 
-    <script src="app.js"></script>
+    <!-- Hidden state store -->
+    <input type="hidden" id="state-id-cliente" value="" />
+    <input type="hidden" id="state-id-solicitud" value="" />
+    <input type="hidden" id="state-id-proceso" value="" />
+    <input type="hidden" id="state-p-docs" value="true" />
+    <input type="hidden" id="state-p-obs" value="false" />
+    <input type="hidden" id="state-p-firma" value="true" />
+    <input type="hidden" id="state-p-acta" value="true" />
 
+    <script>
+        const API = 'http://localhost:8000';
+
+        // ── NAVIGATION ──────────────────────────────────────────
+        function goTo(step) {
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.nav-item[data-step]').forEach(n => n.classList.remove('active'));
+            document.getElementById('sec-' + step).classList.add('active');
+            const btn = document.querySelector(`.nav-item[data-step="${step}"]`);
+            if (btn) btn.classList.add('active');
+        }
+
+        function markDone(step) {
+            const btn = document.querySelector(`.nav-item[data-step="${step}"]`);
+            if (btn) { btn.classList.add('done'); btn.classList.remove('active'); }
+        }
+
+        // ── BOOL TOGGLES ─────────────────────────────────────────
+        function setBool(key, val, clicked) {
+            document.getElementById('state-' + key).value = val;
+            const group = clicked.closest('.toggle-group');
+            group.querySelectorAll('.toggle-btn').forEach(b => {
+                b.classList.remove('on', 'off');
+            });
+            clicked.classList.add(val ? 'on' : 'off');
+        }
+
+        // ── ALERTS ───────────────────────────────────────────────
+        function showAlert(step, type, msg) {
+            document.getElementById('alert-' + step).innerHTML =
+                `<div class="alert alert-${type}" style="margin-bottom:16px;">
+       <span>${msg}</span>
+     </div>`;
+        }
+        function clearAlert(step) {
+            document.getElementById('alert-' + step).innerHTML = '';
+        }
+
+        // ── FORMAT ───────────────────────────────────────────────
+        function fmt(n) {
+            return new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(n);
+        }
+
+        // ── STEP 1: CLIENTE ──────────────────────────────────────
+        async function crearCliente() {
+            clearAlert(1);
+            const nombres = document.getElementById('c-nombres').value.trim();
+            const apellidos = document.getElementById('c-apellidos').value.trim();
+            const doc = document.getElementById('c-doc').value.trim();
+            const tel = document.getElementById('c-tel').value.trim();
+            const correo = document.getElementById('c-correo').value.trim();
+            const ingresos = parseFloat(document.getElementById('c-ingresos').value);
+
+            if (!nombres || !apellidos || !doc || !tel || !correo || isNaN(ingresos)) {
+                showAlert(1, 'warn', '⚠️ Completa todos los campos antes de continuar.');
+                return;
+            }
+
+            const btn = document.querySelector('#sec-1 .btn-primary');
+            btn.disabled = true;
+            btn.innerHTML = '<div class="spinner"></div> Creando...';
+
+            try {
+                const res = await fetch(`${API}/clientes`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ nombres, apellidos, documento_identidad: doc, telefono: tel, correo, ingresos_mensuales: ingresos })
+                });
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.detail || 'Error al crear cliente');
+
+                const idCliente = data.id_cliente;
+                document.getElementById('state-id-cliente').value = idCliente;
+                document.getElementById('s-id-cliente').value = idCliente;
+
+                // ctx
+                document.getElementById('ctx-cliente').textContent = `${nombres} ${apellidos}`;
+                document.getElementById('ctx-id-cliente').textContent = `#${idCliente}`;
+                document.getElementById('ctx-cliente-3').textContent = `${nombres} ${apellidos}`;
+                document.getElementById('ctx-cliente-4').textContent = `${nombres} ${apellidos}`;
+                document.getElementById('ctx-ingresos-4').textContent = fmt(ingresos);
+
+                markDone(1);
+                showAlert(1, 'success', `✅ Cliente creado correctamente. ID: ${idCliente}`);
+                setTimeout(() => goTo(2), 900);
+            } catch (e) {
+                showAlert(1, 'error', `❌ ${e.message}`);
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '→ Crear cliente';
+            }
+        }
+
+        // ── STEP 2: SOLICITUD ────────────────────────────────────
+        async function crearSolicitud() {
+            clearAlert(2);
+            const radicado = document.getElementById('s-radicado').value.trim();
+            const asesor = parseInt(document.getElementById('s-asesor').value);
+            const tipo = parseInt(document.getElementById('s-tipo').value);
+            const idCliente = parseInt(document.getElementById('state-id-cliente').value);
+
+            if (!radicado || isNaN(asesor) || isNaN(tipo) || !idCliente) {
+                showAlert(2, 'warn', '⚠️ Completa todos los campos. Asegúrate de haber creado un cliente primero.');
+                return;
+            }
+
+            const btn = document.querySelector('#sec-2 .btn-primary');
+            btn.disabled = true;
+            btn.innerHTML = '<div class="spinner"></div> Creando...';
+
+            try {
+                const res = await fetch(`${API}/solicitudes`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ numero_radicado: radicado, id_cliente: idCliente, id_asesor: asesor, id_tipo_operacion: tipo })
+                });
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.detail || 'Error al crear solicitud');
+
+                const idSolicitud = data.id_solicitud;
+                document.getElementById('state-id-solicitud').value = idSolicitud;
+                document.getElementById('p-id-solicitud').value = idSolicitud;
+
+                document.getElementById('ctx-solicitud-3').textContent = `#${idSolicitud}`;
+                document.getElementById('ctx-radicado-3').textContent = radicado;
+
+                markDone(2);
+                showAlert(2, 'success', `✅ Solicitud creada. ID: ${idSolicitud} | Radicado: ${radicado}`);
+                setTimeout(() => goTo(3), 900);
+            } catch (e) {
+                showAlert(2, 'error', `❌ ${e.message}`);
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '→ Crear solicitud';
+            }
+        }
+
+        // ── STEP 3: PROCESO ──────────────────────────────────────
+        async function crearProceso() {
+            clearAlert(3);
+            const idSolicitud = parseInt(document.getElementById('state-id-solicitud').value);
+            const canon = parseFloat(document.getElementById('p-canon').value);
+            const docs = document.getElementById('state-p-docs').value === 'true';
+            const obs = document.getElementById('state-p-obs').value === 'true';
+            const firma = document.getElementById('state-p-firma').value === 'true';
+            const acta = document.getElementById('state-p-acta').value === 'true';
+
+            if (!idSolicitud || isNaN(canon)) {
+                showAlert(3, 'warn', '⚠️ Completa el valor del canon. Verifica que la solicitud esté creada.');
+                return;
+            }
+
+            const btn = document.querySelector('#sec-3 .btn-primary');
+            btn.disabled = true;
+            btn.innerHTML = '<div class="spinner"></div> Creando...';
+
+            try {
+                const res = await fetch(`${API}/procesos`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        id_solicitud: idSolicitud,
+                        documentos_completos: docs,
+                        observaciones_contrato: obs,
+                        firma_completada: firma,
+                        acta_entrega: acta,
+                        valor_canon: canon
+                    })
+                });
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.detail || 'Error al crear proceso');
+
+                const idProceso = data.id_proceso;
+                document.getElementById('state-id-proceso').value = idProceso;
+                document.getElementById('ctx-proceso-4').textContent = `#${idProceso}`;
+                document.getElementById('ctx-canon-4').textContent = fmt(canon);
+
+                markDone(3);
+                showAlert(3, 'success', `✅ Proceso creado. ID: ${idProceso} — Estado: EN_VALIDACION`);
+                setTimeout(() => goTo(4), 900);
+            } catch (e) {
+                showAlert(3, 'error', `❌ ${e.message}`);
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '→ Crear proceso';
+            }
+        }
+
+        // ── STEP 4: EVALUACIÓN ───────────────────────────────────
+        async function ejecutarEvaluacion() {
+            clearAlert(4);
+            document.getElementById('result-container').innerHTML = '';
+
+            const idProceso = document.getElementById('state-id-proceso').value;
+            const ingresos = parseFloat(document.getElementById('c-ingresos').value);
+            const canon = parseFloat(document.getElementById('p-canon').value);
+            const docs = document.getElementById('state-p-docs').value === 'true';
+            const obs = document.getElementById('state-p-obs').value === 'true';
+            const firma = document.getElementById('state-p-firma').value === 'true';
+            const acta = document.getElementById('state-p-acta').value === 'true';
+            const tipoOp = document.getElementById('e-tipo').value;
+
+            if (!idProceso) {
+                showAlert(4, 'warn', '⚠️ Aún no hay un proceso creado. Completa los pasos anteriores.');
+                return;
+            }
+
+            const btn = document.getElementById('btn-eval');
+            btn.disabled = true;
+            btn.innerHTML = '<div class="spinner"></div> Evaluando...';
+
+            try {
+                const res = await fetch(`${API}/evaluate`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        proceso_id: String(idProceso),
+                        tipo_operacion: tipoOp,
+                        ingresos_cliente: ingresos,
+                        valor_canon: canon,
+                        documentos_completos: docs,
+                        observaciones_contrato: obs,
+                        firma_completada: firma,
+                        acta_entrega: acta
+                    })
+                });
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.detail || 'Error al evaluar');
+
+                renderResult(data);
+                markDone(4);
+            } catch (e) {
+                showAlert(4, 'error', `❌ ${e.message}`);
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '⚡ Ejecutar evaluación';
+            }
+        }
+
+        function renderResult(data) {
+            const aprobado = data.resultado === 'APROBADO';
+            const motivos = data.motivos || [];
+
+            let motivosHTML = '';
+            if (motivos.length > 0) {
+                motivosHTML = `
+      <div style="margin-top:16px; font-size:12px; font-weight:600; letter-spacing:.08em; color:var(--muted); text-transform:uppercase; margin-bottom:8px;">
+        Motivos de rechazo
+      </div>
+      <div class="result-motivos">
+        ${motivos.map(m => `
+          <div class="motivo-item">
+            <span class="motivo-icon">✗</span>
+            <span>${m}</span>
+          </div>`).join('')}
+      </div>`;
+            } else {
+                motivosHTML = `
+      <div style="margin-top:14px; font-size:14px; color:var(--success);">
+        ✓ Todas las reglas de negocio han sido satisfechas correctamente.
+      </div>`;
+            }
+
+            document.getElementById('result-container').innerHTML = `
+    <div class="result-card ${aprobado ? 'aprobado' : 'rechazado'}">
+      <div style="display:flex; align-items:center; gap:12px; margin-bottom:4px;">
+        <span class="badge ${aprobado ? 'badge-green' : 'badge-red'}">
+          ${aprobado ? '✓ Aprobado' : '✗ Rechazado'}
+        </span>
+        <span style="font-size:12px; color:var(--muted); font-family:var(--mono);">
+          Proceso #${data.proceso_id || document.getElementById('state-id-proceso').value}
+        </span>
+      </div>
+      <div class="result-verdict">${aprobado ? 'APROBADO' : 'RECHAZADO'}</div>
+      <div style="font-size:13px; color:var(--muted);">
+        ${aprobado
+                    ? 'El proceso inmobiliario cumple todas las reglas de negocio definidas.'
+                    : `Se encontraron ${motivos.length} regla${motivos.length > 1 ? 's' : ''} incumplida${motivos.length > 1 ? 's' : ''}.`}
+      </div>
+      ${motivosHTML}
+      <div style="margin-top:20px; padding-top:16px; border-top:1px solid ${aprobado ? '#22c55e20' : '#ef444420'};">
+        <button class="btn btn-ghost" onclick="resetAll()" style="font-size:12px; padding:7px 14px;">
+          ↺ Nueva evaluación
+        </button>
+      </div>
+    </div>`;
+        }
+
+        // ── RESET ─────────────────────────────────────────────────
+        function resetAll() {
+            ['state-id-cliente', 'state-id-solicitud', 'state-id-proceso'].forEach(id => {
+                document.getElementById(id).value = '';
+            });
+            document.getElementById('state-p-docs').value = 'true';
+            document.getElementById('state-p-obs').value = 'false';
+            document.getElementById('state-p-firma').value = 'true';
+            document.getElementById('state-p-acta').value = 'true';
+
+            ['c-nombres', 'c-apellidos', 'c-doc', 'c-tel', 'c-correo', 'c-ingresos',
+                's-radicado', 's-asesor', 's-id-cliente', 'p-canon', 'p-id-solicitud'].forEach(id => {
+                    const el = document.getElementById(id);
+                    if (el) el.value = '';
+                });
+            document.getElementById('s-tipo').value = '';
+            document.getElementById('result-container').innerHTML = '';
+
+            [1, 2, 3, 4].forEach(s => clearAlert(s));
+            document.querySelectorAll('.nav-item[data-step]').forEach(n => {
+                n.classList.remove('done', 'active');
+            });
+            goTo(1);
+        }
+    </script>
 </body>
 
 </html>
